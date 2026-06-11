@@ -8266,6 +8266,7 @@ DataOutInterface<dim, spacedim>::write_filtered_data(
 
 namespace
 {
+#if defined(DEAL_II_WITH_HDF5) || defined(DEAL_II_WITH_NETCDF)
   /**
    * Holds local and global numbers of mesh cells and nodes.
    */
@@ -8293,7 +8294,7 @@ namespace
     uint64_t       n_global[2];
     uint64_t       offsets[2] = {0, 0};
 
-#ifdef DEAL_II_WITH_MPI
+#  ifdef DEAL_II_WITH_MPI
     int ierr =
       MPI_Allreduce(n_local,
                     n_global,
@@ -8310,17 +8311,17 @@ namespace
                  MPI_SUM,
                  comm);
     AssertThrowMPI(ierr);
-#else
+#  else
     n_global[0] = n_local[0];
     n_global[1] = n_local[1];
     offsets[0]  = 0;
     offsets[1]  = 0;
-#endif
+#  endif
 
     return {
       n_local[0], n_local[1], n_global[0], n_global[1], offsets[0], offsets[1]};
   }
-
+#endif
 
 
 #ifdef DEAL_II_WITH_HDF5
